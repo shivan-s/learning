@@ -1,2 +1,17 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script lang="ts">
+	export let data;
+
+	const { entries } = data;
+</script>
+
+<table>
+	<thead
+		><tr><th scope="col">Date</th><th scope="col">Type</th><th scope="col">Content</th></tr></thead
+	>
+	<tbody>
+		{#each entries as { date, type, content }}
+			<tr><td>{new Date(date).toLocaleDateString()}</td><td>{type}</td><td>{content}</td></tr>
+		{/each}
+	</tbody>
+</table>
+
