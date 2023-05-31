@@ -2,6 +2,12 @@
   "scripts": {
     "prepare": "husky install"
   },
+  "lint-staged": {
+    "{*.ts,*.js,*.svelte}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
+  },
   "devDependencies": {
     "husky": "^8.0.0",
     "lerna": "^6.6.2",
@@ -9,7 +15,7 @@
     "prettier": "^2.8.8",
     "prettier-plugin-svelte": "^2.10.0"
   },
-  "name": "rentme",
+  "name": "learning",
   "workspaces": [
     "app/*"
   ]
