@@ -1,0 +1,63 @@
+---
+name: main
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+
+env:
+  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+jobs:
+  db:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Run npm, install dependencies, and deploy
+        run: |
+          cd db
+          npm update -g npm
+          npm install -g wrangler
+          npx wrangler d1 execute learning --file="./db/schema.sql"
+
+  client:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "npm"
+      - name: Install deps and run test
+        run: |
+          cd client
+          npm ci
+          npx playwright install --with-deps
+      - name: Run tests
+        run: |
+          cd client
+          npx playwright test
+      - name: Run build
+        run: |
+          cd client
+          npm run build
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+      - name: Publish to Cloudflare
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: learning
+          directory: ./client/.svelte-kit/cloudflare
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
