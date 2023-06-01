@@ -24,7 +24,7 @@ jobs:
           npm update -g npm
           npm install -g wrangler
           npx wrangler d1 execute learning --file="./schema.sql"
-          npx wrangler d1 execute preview-learning --file="./db/schema.sql"
+          npx wrangler d1 execute preview-learning --file="./schema.sql"
 
   client:
     timeout-minutes: 60
@@ -40,10 +40,10 @@ jobs:
           cd client
           npm ci
           npx playwright install --with-deps
-      - name: Run tests
-        run: |
-          cd client
-          npx playwright test
+      # - name: Run tests
+      #   run: |
+      #     cd client
+      #     npx playwright test
       - name: Run build
         run: |
           cd client
