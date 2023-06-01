@@ -2,7 +2,7 @@ import type { PageServerLoad } from './$types';
 import connection from '$lib/db';
 
 export const load = (async ({ platform }) => {
-	const db = connection(platform.env.DB);
+	const db = connection(platform?.env?.DB);
 	const learnings = await db
 		.selectFrom('learnings')
 		.select(['learnings.deleted_at'])
