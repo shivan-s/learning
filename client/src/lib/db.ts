@@ -1,7 +1,6 @@
 import { Kysely, type Generated } from 'kysely';
 import { D1Dialect } from 'kysely-d1';
 import type { D1Database } from '@cloudflare/workers-types';
-import localDb from './localDb';
 
 interface Topic {
 	id: Generated<number>;
@@ -25,9 +24,6 @@ export interface Database {
 	learnings: Learning;
 }
 
-export default function connection(d1Database?: D1Database) {
-	if (d1Database) {
-		return new Kysely<Database>({ dialect: new D1Dialect({ database: d1Database }) });
-	}
-	return localDb<Database>();
+export default function connection(d1Database: D1Database) {
+	return new Kysely<Database>({ dialect: new D1Dialect({ database: d1Database }) });
 }
