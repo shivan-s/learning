@@ -54,13 +54,8 @@
 		>
 	</thead>
 	<tbody>
-		{#if form?.newLearning}<tr
-				><td transition:fade>{new Date(form.newLearning.createdAt).toLocaleDateString()}</td><td
-					transition:fade>{form.newLearning.topic}</td
-				><td>{form.newLearning.content}</td><td transition:fade><button>Edit</button></td></tr
-			>{/if}
 		{#each learnings as { learningId, createdAt, topic, content }, order}
-			<tr
+			<tr transition:fade
 				><td>{new Date(createdAt).toLocaleDateString()}</td><td>{topic}</td><td class="content"
 					><p>{content}</p>
 					<div class="edit">
