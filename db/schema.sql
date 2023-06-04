@@ -23,3 +23,10 @@ INSERT OR IGNORE INTO learnings (id, content, topic_id) VALUES (
     1, 'This is an example learning. Must be less than 255 characters.', 1
 ),
 (2, 'This is another example learning.', 1);
+
+-- Topics
+
+INSERT OR IGNORE INTO topics (id, name) VALUES (2, 'Programming'),
+(3, 'Golf'),
+(4, 'Flying'),
+(5, 'BJJ');

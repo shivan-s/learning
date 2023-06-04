@@ -1,7 +1,0 @@
-{
-  "name": "learning",
-  "adapter": "sqlite3",
-  "projectPaths": [
-    "."
-  ]
-}

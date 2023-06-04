@@ -2,10 +2,10 @@
 	<title>Shivan's Learning</title>
 </svelte:head>
 
-<header />
-<div class="flex col">
-	<slot />
-</div>
+<header>
+	<h1><a href="/">Learning</a></h1>
+</header>
+<slot />
 <footer />
 
 <style>
@@ -33,8 +33,8 @@
 	}
 	:global(body) {
 		display: flex;
-		justify-content: center;
-		flex-direction: row;
+		flex-direction: column;
+		align-items: center;
 		line-height: 1.5;
 		background: var(--primary-color);
 		font-family: 'Ubuntu Mono', monospace;
@@ -47,6 +47,7 @@
 	}
 	:global(input, button, textarea, select) {
 		font: inherit;
+		width: fit-content;
 	}
 	:global(p, h1, h2, h3, h4, h5, h6) {
 		overflow-wrap: break-word;
@@ -83,6 +84,14 @@
 	:global(.icon) {
 		width: 12em;
 		height: 8em;
+	}
+	:global(.display-box) {
+		display: flex;
+		flex-direction: columns;
+		padding: 1em;
+		background: var(--primary-color);
+		flex-direction: column;
+		border-radius: 0.5em;
 	}
 
 	:global(.animate-content) {

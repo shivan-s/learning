@@ -24,8 +24,10 @@
 		"@sveltejs/adapter-auto": "^2.0.0",
 		"@sveltejs/adapter-cloudflare": "^2.3.0",
 		"@sveltejs/kit": "^1.5.0",
+		"@types/better-sqlite3": "^7.6.4",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
+		"better-sqlite3": "^8.4.0",
 		"eslint": "^8.28.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-svelte": "^2.26.0",
@@ -43,6 +45,7 @@
 	"type": "module",
 	"dependencies": {
 		"kysely": "^0.25.0",
-		"kysely-d1": "^0.3.0"
+		"kysely-d1": "^0.3.0",
+		"zod": "^3.21.4"
 	}
 }
