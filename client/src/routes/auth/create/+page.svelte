@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import Modal from '$components/Modal.svelte';
 	import type { ActionData, PageData } from './$types';
 	import { fade } from 'svelte/transition';
 
@@ -9,16 +8,10 @@
 
 	let loading = false;
 
-	if (form?.newLearning) {
-		data.learnings.splice(0, 0);
-	}
-
 	$: ({ learnings, topics } = data);
-</script>
 
-{#if form?.requestEdit}
-	<Modal show={true}>Test</Modal>
-{/if}
+	console.log(data);
+</script>
 
 <form
 	action="?/create"
@@ -48,21 +41,41 @@
 {/if}
 <table>
 	<thead
-		><tr
-			><th scope="col">Date</th><th scope="col">Topic</th><th scope="col" colspan="2">Learning</th
-			></tr
-		>
+		><tr><th scope="col">Date</th><th scope="col">Topic</th><th scope="col">Learning</th></tr>
 	</thead>
 	<tbody>
-		{#each learnings as { learningId, createdAt, topic, content }, order}
-			<tr transition:fade
-				><td>{new Date(createdAt).toLocaleDateString()}</td><td>{topic}</td><td class="content"
-					><p>{content}</p>
-					<div class="edit">
-						<form id="requestEdit" method="POST" action="?/requestEdit" />
-						<input form="requestEdit" type="hidden" value={learningId} />
-						<input form="requestEdit" type="hidden" value={order} />
-						<button formaction="requestEdit">Edit</button>
+		{#each learnings as { learningId, createdAt, topic, topicId, content }}
+			<tr
+				in:fade
+				class={form?.requestEditLearning?.learningId === learningId ? 'visible' : 'hidden'}
+			>
+				<td>{new Date(createdAt).toLocaleDateString()}</td><td>
+					<form id="updateLearning" action="?/updateLearning" method="POST" />
+					<label>
+						<select name="topicId" value={topicId}>
+							{#each topics as { name, id }}
+								<option value={id}>{name}</option>
+							{/each}
+						</select>
+					</label>
+				</td><td class="content">
+					<label>
+						<textarea name="content" value={content} />
+					</label>
+					<button type="submit" formaction="updateLearning">Save</button>
+					<button>Reset</button>
+				</td>
+			</tr>
+			<tr
+				in:fade
+				class={form?.requestEditLearning?.learningId === learningId ? 'hidden' : 'visible'}
+				><td>{new Date(createdAt).toLocaleDateString()}</td><td>{topic}</td><td
+					><div class="content">
+						<p>{content}</p>
+						<form method="POST" action="?/requestEdit">
+							<input value={learningId} type="hidden" name="learningId" />
+							<button class="edit" type="submit">Edit</button>
+						</form>
 					</div>
 				</td>
 			</tr>
@@ -71,6 +84,12 @@
 </table>
 
 <style>
+	.visible {
+		display: block;
+	}
+	.hidden {
+		display: none;
+	}
 	.edit {
 		visibility: hidden;
 	}

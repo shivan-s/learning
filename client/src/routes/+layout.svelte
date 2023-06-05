@@ -13,12 +13,14 @@
 		--primary-color: whitesmoke;
 		--secondary-color: ;
 		--text-color: black;
+		--text-accent-color: darkgray;
 	}
 
 	:global(:root[dark-theme='dark']) {
 		--primary-color: slategrey;
 		--secondary-color: ;
 		--text-color: whitesmoke;
+		--text-accent-color: lightcyan;
 	}
 
 	:global(*, *::before, *::after) {
@@ -51,6 +53,13 @@
 	}
 	:global(p, h1, h2, h3, h4, h5, h6) {
 		overflow-wrap: break-word;
+	}
+	:global(a) {
+		text-decoration: none;
+		color: var(--text-accent-color);
+	}
+	:global(a:hover) {
+		text-decoration: underline;
 	}
 	:global(strong) {
 		color: var(--secondary-color);

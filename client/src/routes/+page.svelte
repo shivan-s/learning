@@ -1,15 +1,18 @@
 <script lang="ts">
+	import { fade } from 'svelte/transition';
+	import { page } from '$app/stores';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
-	const { learnings } = data;
+	$: ({ learnings } = data);
 </script>
 
 <!-- TODO: implement search -->
 <div class="flex">
-	<form id="search" action="?/search" method="GET" />
-	<input form="search" type="text" name="q" />
-	<button formaction="search" type="submit">Search</button>
+	<form method="GET">
+		<input type="text" name="q" value={$page.url.searchParams.get('q') ?? ''} />
+		<button type="submit">Search</button>
+	</form>
 	<a href="/auth/create">Create</a>
 </div>
 <table>
@@ -19,7 +22,7 @@
 	<tbody>
 		{#if learnings}
 			{#each learnings as { createdAt, topic, content }}
-				<tr
+				<tr in:fade
 					><td>{new Date(createdAt).toLocaleDateString()}</td><td>{topic}</td><td>{content}</td></tr
 				>
 			{/each}
@@ -28,3 +31,10 @@
 		{/if}
 	</tbody>
 </table>
+
+<style>
+	form {
+		margin: 0;
+		padding: 0;
+	}
+</style>

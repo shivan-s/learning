@@ -3,7 +3,7 @@ import connection from '$lib/db';
 
 export const load = (async ({ platform, url }) => {
 	console.log(platform);
-	const q = url.searchParams.get('q') || '*';
+	const q = url.searchParams.get('q');
 	const db = connection(platform?.env?.DB);
 	const topics = await db
 		.selectFrom('topics')
@@ -13,7 +13,6 @@ export const load = (async ({ platform, url }) => {
 	const learnings = await db
 		.selectFrom('learnings')
 		.where('learnings.deleted_at', 'is', null)
-		/* .where(({ or, cmpr }) => or([cmpr('content', '=', q), cmpr('topic', '=', q)])) */
 		.innerJoin('topics', 'learnings.topic_id', 'topics.id')
 		.select([
 			'learnings.created_at as createdAt',
@@ -21,6 +20,9 @@ export const load = (async ({ platform, url }) => {
 			'learnings.content as content',
 			'topics.name as topic'
 		])
+		.$if(q !== null, (qb) =>
+			qb.where(({ or, cmpr }) => or([cmpr('content', 'like', q), cmpr('topics.name', 'like', q)]))
+		)
 		.execute();
 	return {
 		topics,

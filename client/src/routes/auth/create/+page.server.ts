@@ -65,9 +65,9 @@ export const actions = {
 			throw error(400, 'Invalid Id');
 		}
 		const learningId = result.data;
-		const learning = db
+		const learning = await db
 			.selectFrom('learnings')
-			.where('deleted_at', 'is', null)
+			.where('learnings.deleted_at', 'is', null)
 			.where('learnings.id', '=', learningId)
 			.innerJoin('topics', 'learnings.topic_id', 'topics.id')
 			.select([
@@ -78,6 +78,7 @@ export const actions = {
 				'topics.name as topic'
 			])
 			.executeTakeFirstOrThrow();
+		return { success: true, requestEditLearning: learning };
 	}
 } satisfies Actions;
 
@@ -97,7 +98,8 @@ export const load = (async ({ platform }) => {
 			'learnings.created_at as createdAt',
 			'learnings.updated_at as updatedAt',
 			'learnings.content as content',
-			'topics.name as topic'
+			'topics.name as topic',
+			'topics.id as topicId'
 		])
 		.orderBy('createdAt', 'desc')
 		.execute();
