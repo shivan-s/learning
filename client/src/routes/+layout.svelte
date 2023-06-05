@@ -63,6 +63,10 @@
 		content: '✽ ';
 		color: var(--secondary-color);
 	}
+	:global(h1 a) {
+		text-decoration: none;
+		color: var(--text-color);
+	}
 	:global(.flex) {
 		display: flex;
 	}

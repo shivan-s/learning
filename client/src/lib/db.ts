@@ -24,6 +24,11 @@ export interface Database {
 	learnings: Learning;
 }
 
-export default function connection(d1Database: D1Database) {
-	return new Kysely<Database>({ dialect: new D1Dialect({ database: d1Database }) });
+export default function connection(db: D1Database) {
+	if (!db) {
+		console.error('Database is ', db);
+		/* throw error(500, 'No DB connection'); */
+	}
+	console.log('connecting to db...', db);
+	return new Kysely<Database>({ dialect: new D1Dialect({ database: db }) });
 }

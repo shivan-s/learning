@@ -2,6 +2,7 @@ import type { PageServerLoad } from './$types';
 import connection from '$lib/db';
 
 export const load = (async ({ platform, url }) => {
+	console.log(platform);
 	const q = url.searchParams.get('q') || '*';
 	const db = connection(platform?.env?.DB);
 	const topics = await db
