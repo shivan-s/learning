@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS topics (
-    id INT PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
     deleted_at TEXT DEFAULT NULL,
@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS topics (
 );
 
 CREATE TABLE IF NOT EXISTS learnings (
-    id INT PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
     deleted_at TEXT DEFAULT NULL,
@@ -29,4 +29,4 @@ INSERT OR IGNORE INTO learnings (id, content, topic_id) VALUES (
 INSERT OR IGNORE INTO topics (id, name) VALUES (2, 'Programming'),
 (3, 'Golf'),
 (4, 'Flying'),
-(5, 'BJJ');
+(5, 'Brazillian Jit-Jitsu');
