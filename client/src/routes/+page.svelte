@@ -3,18 +3,24 @@
 	import { page } from '$app/stores';
 	import type { PageData } from './$types';
 
+	const { searchParams } = $page.url;
+	const q = searchParams.get('q');
+	const topicId = searchParams.get('topicId');
+
 	export let data: PageData;
-	$: ({ learnings } = data);
+	$: ({ learnings, topics } = data);
 </script>
 
-<!-- TODO: implement search -->
-<div class="flex">
-	<form method="GET">
-		<input type="text" name="q" value={$page.url.searchParams.get('q') ?? ''} />
-		<button type="submit">Search</button>
-	</form>
-	<a href="/auth/create">Create</a>
-</div>
+<form method="GET">
+	<select name="topic" value={topicId}>
+		<option value={null}>All</option>
+		{#each topics as { id, name }}
+			<option value={String(id)}>{name}</option>
+		{/each}
+	</select>
+	<input type="text" name="q" value={q ?? ''} />
+	<button type="submit">Search</button>
+</form>
 {#each learnings as { createdAt, topic, content }}
 	<div in:fade>
 		<p>{new Date(createdAt).toLocaleDateString()}</p>

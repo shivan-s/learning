@@ -2,6 +2,7 @@
 
 <header>
 	<h1><a href="/">Learning</a></h1>
+	<a href="/auth/create">Create</a>
 </header>
 <main>
 	<slot />
@@ -11,22 +12,25 @@
 <style>
 	:global(:root) {
 		--primary-color: whitesmoke;
-		--secondary-color: ;
+		--secondary-color: dimgrey;
 		--text-color: black;
 		--text-accent-color: darkgray;
 		--danger-text: firebrick;
 		--danger-color: lightpink;
+		--success-text: darkgreen;
+		--success-color: darkseagreen;
 	}
 
 	:global(:root[dark-theme='dark']) {
 		--primary-color: slategrey;
-		--secondary-color: ;
+		--secondary-color: ghostwhite;
 		--text-color: whitesmoke;
 		--text-accent-color: lightcyan;
 		--danger-text: lightpink;
 		--danger-color: firebrick;
+		--success-text: darkseagreen;
+		--success-color: darkgreek;
 	}
-
 	:global(*, *::before, *::after) {
 		box-sizing: border-box;
 	}
@@ -52,8 +56,20 @@
 		max-width: 100%;
 	}
 	:global(input, button, textarea, select) {
+		padding: 0.25em 0.5em;
+		border-radius: 0.125em;
 		font: inherit;
 		width: fit-content;
+	}
+
+	:global(textarea) {
+		width: 100%;
+		height: 8em;
+		resize: none;
+	}
+
+	:global(textarea .error) {
+		border: 2px solid var(--danger-color);
 	}
 
 	:global(button) {
@@ -68,9 +84,6 @@
 	}
 	:global(a:hover) {
 		text-decoration: underline;
-	}
-	:global(strong) {
-		color: var(--secondary-color);
 	}
 	:global(ul) {
 		list-style: none;
@@ -114,16 +127,45 @@
 		flex-direction: column;
 		border-radius: 0.5em;
 	}
-
 	:global(.btn-danger) {
 		background-color: var(--danger-color);
 		color: var(--danger-text);
 	}
-
+	:global(.btn-danger:hover) {
+		filter: brightness(120%);
+	}
+	:global(.btn-success) {
+		background-color: var(--success-color);
+		color: var(--success-text);
+	}
+	:global(.btn-success:hover) {
+		filter: brightness(120%);
+	}
 	:global(.animate-content) {
 		animation-duration: 0.5s;
 		animation-name: animate-fade;
 		animation-fill-mode: backwards;
+	}
+
+	main {
+		display: flex;
+		flex-direction: column;
+		padding-top: 2em;
+		gap: 1em;
+	}
+	header {
+		display: flex;
+		align-items: center;
+		gap: 1em;
+		border-style: solid;
+		border-bottom: 1px;
+		border-color: var(--secondary-color);
+	}
+	header a {
+		border-style: solid;
+		border-color: primary;
+		border-left: 1px;
+		border-color: var(--secondary-color);
 	}
 
 	@keyframes -global-animate-fade {

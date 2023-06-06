@@ -219,6 +219,7 @@ export const load = (async ({ platform }) => {
 		.execute();
 	return {
 		topics,
-		learnings
+		learnings,
+		totalChar: 255
 	};
 }) satisfies PageServerLoad;

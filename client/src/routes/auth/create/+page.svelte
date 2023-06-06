@@ -8,7 +8,9 @@
 
 	let loading = false;
 
-	$: ({ learnings, topics } = data);
+	let content = form?.content ?? '';
+
+	$: ({ learnings, topics, totalChar } = data);
 
 	console.log(data);
 	console.log(form);
@@ -32,8 +34,15 @@
 			{/each}
 		</select>
 	</label>
-	<label>
-		<textarea name="content" value={String(form?.content ?? '')} />
+	<label style="position: relative">
+		<textarea
+			on:change={({ target }) => (content = target.value)}
+			name="content"
+			bind:value={content}
+		/>
+		<p style="position: absolute; bottom: 0px; right: 0px; padding: 0.5em 0.25em;">
+			({content.length}/{totalChar})
+		</p>
 	</label>
 	<button type="submit" disabled={loading}>Create</button>
 </form>
@@ -79,13 +88,13 @@
       "
 		>
 			<p>{new Date(createdAt).toLocaleDateString()}</p>
-			<p><strong>{topic}</strong></p>
+			<strong>{topic}</strong>
 			<div>
 				<p>{content}</p>
 				{#if deletedAt}
 					<form method="POST" action="?/undelete">
 						<input value={learningId} type="hidden" name="learningId" />
-						<button class="edit" type="submit">Restore</button>
+						<button class="edit btn-success" type="submit">Restore</button>
 					</form>
 				{:else}
 					<form method="POST" action="?/requestEdit">

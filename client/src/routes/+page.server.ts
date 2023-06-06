@@ -2,8 +2,8 @@ import type { PageServerLoad } from './$types';
 import connection from '$lib/db';
 
 export const load = (async ({ platform, url }) => {
-	console.log(platform);
 	const q = url.searchParams.get('q');
+	const topicFilter = url.searchParams.get('topic');
 	const db = connection(platform?.env?.DB);
 	const topics = await db
 		.selectFrom('topics')
@@ -20,9 +20,11 @@ export const load = (async ({ platform, url }) => {
 			'learnings.content as content',
 			'topics.name as topic'
 		])
-		.$if(q !== null, (qb) =>
+		.$if(q !== null && q.length > 0, (qb) =>
 			qb.where(({ or, cmpr }) => or([cmpr('content', 'like', q), cmpr('topics.name', 'like', q)]))
 		)
+		.$if(topicFilter !== null, (qb) => qb.where('topics.id', '=', parseInt(topicFilter ?? '')))
+		.orderBy('createdAt', 'desc')
 		.execute();
 	return {
 		topics,
