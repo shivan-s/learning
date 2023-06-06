@@ -1,11 +1,11 @@
-<svelte:head>
-	<title>Shivan's Learning</title>
-</svelte:head>
+<svelte:head><title>Shivan's Learning</title></svelte:head>
 
 <header>
 	<h1><a href="/">Learning</a></h1>
 </header>
-<slot />
+<main>
+	<slot />
+</main>
 <footer />
 
 <style>
@@ -14,6 +14,8 @@
 		--secondary-color: ;
 		--text-color: black;
 		--text-accent-color: darkgray;
+		--danger-text: firebrick;
+		--danger-color: lightpink;
 	}
 
 	:global(:root[dark-theme='dark']) {
@@ -21,6 +23,8 @@
 		--secondary-color: ;
 		--text-color: whitesmoke;
 		--text-accent-color: lightcyan;
+		--danger-text: lightpink;
+		--danger-color: firebrick;
 	}
 
 	:global(*, *::before, *::after) {
@@ -50,6 +54,10 @@
 	:global(input, button, textarea, select) {
 		font: inherit;
 		width: fit-content;
+	}
+
+	:global(button) {
+		cursor: pointer;
 	}
 	:global(p, h1, h2, h3, h4, h5, h6) {
 		overflow-wrap: break-word;
@@ -105,6 +113,11 @@
 		background: var(--primary-color);
 		flex-direction: column;
 		border-radius: 0.5em;
+	}
+
+	:global(.btn-danger) {
+		background-color: var(--danger-color);
+		color: var(--danger-text);
 	}
 
 	:global(.animate-content) {

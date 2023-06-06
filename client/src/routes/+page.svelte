@@ -15,26 +15,10 @@
 	</form>
 	<a href="/auth/create">Create</a>
 </div>
-<table>
-	<thead
-		><tr><th scope="col">Date</th><th scope="col">Topic</th><th scope="col">Learning</th></tr>
-	</thead>
-	<tbody>
-		{#if learnings}
-			{#each learnings as { createdAt, topic, content }}
-				<tr in:fade
-					><td>{new Date(createdAt).toLocaleDateString()}</td><td>{topic}</td><td>{content}</td></tr
-				>
-			{/each}
-		{:else}
-			Loading...
-		{/if}
-	</tbody>
-</table>
-
-<style>
-	form {
-		margin: 0;
-		padding: 0;
-	}
-</style>
+{#each learnings as { createdAt, topic, content }}
+	<div in:fade>
+		<p>{new Date(createdAt).toLocaleDateString()}</p>
+		<p><strong>{topic}</strong></p>
+		<p>{content}</p>
+	</div>
+{/each}
