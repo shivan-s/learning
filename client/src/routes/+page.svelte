@@ -1,30 +1,57 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
-	import { page } from '$app/stores';
-	import type { PageData } from './$types';
-
-	const { searchParams } = $page.url;
-	const q = searchParams.get('q');
-	const topicId = searchParams.get('topicId');
+	import type { PageData, ActionData } from './$types';
+	import { loading } from '$lib/stores';
+	import { enhance } from '$app/forms';
 
 	export let data: PageData;
-	$: ({ learnings, topics } = data);
+	export let form: ActionData;
+	$: ({ learnings, topics, topicId, q, randomLearning } = data);
+
+	if (form?.randomLearning) {
+		randomLearning = form.randomLearning;
+	}
 </script>
 
-<form method="GET">
-	<select name="topic" value={topicId}>
-		<option value={null}>All</option>
-		{#each topics as { id, name }}
-			<option value={String(id)}>{name}</option>
-		{/each}
-	</select>
-	<input type="text" name="q" value={q ?? ''} />
-	<button type="submit">Search</button>
-</form>
-{#each learnings as { createdAt, topic, content }}
-	<div in:fade>
-		<p>{new Date(createdAt).toLocaleDateString()}</p>
-		<p><strong>{topic}</strong></p>
-		<p>{content}</p>
+{#if randomLearning}
+	<div in:fade out:fade style="min-height: 10rem">
+		<p>{new Date(randomLearning.createdAt).toLocaleDateString()}</p>
+		<p><strong>{randomLearning.topic}</strong></p>
+		<p>{randomLearning.content}</p>
 	</div>
-{/each}
+	<form
+		method="POST"
+		action="?/randomLearning"
+		use:enhance={() => {
+			loading.set(true);
+			return async ({ update }) => {
+				await update();
+				loading.set(false);
+			};
+		}}
+	>
+		<button type="submit" disabled={$loading}>Generate</button>
+	</form>
+	<hr style="border-top: 1px solid gray" />
+	<form method="GET">
+		<select name="topic" value={topicId ?? '-1'}>
+			<option value="-1">All</option>
+			{#each topics as { id, name }}
+				<option value={String(id)}>{name}</option>
+			{/each}
+		</select>
+		<input type="text" name="q" value={q ?? ''} />
+		<button type="submit" disabled={$loading}>Search</button>
+	</form>
+	{#each learnings as { createdAt, topic, content }}
+		<div in:fade>
+			<p>{new Date(createdAt).toLocaleDateString()}</p>
+			<p><strong>{topic}</strong></p>
+			<p>{content}</p>
+		</div>
+	{/each}
+{:else}
+	<p style="text-align: center">
+		No learnings. Please <a href="/auth/create/">create</a> some learnings to share.
+	</p>
+{/if}

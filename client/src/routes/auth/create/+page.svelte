@@ -2,11 +2,10 @@
 	import { enhance } from '$app/forms';
 	import type { ActionData, PageData } from './$types';
 	import { fade } from 'svelte/transition';
+	import { loading } from '$lib/stores';
 
 	export let data: PageData;
 	export let form: ActionData;
-
-	let loading = false;
 
 	let content = form?.content ?? '';
 
@@ -20,10 +19,10 @@
 	action="?/create"
 	method="POST"
 	use:enhance={() => {
-		loading = true;
+		loading.set(true);
 		return async ({ update }) => {
 			await update();
-			loading = false;
+			loading.set(false);
 		};
 	}}
 >
@@ -35,17 +34,14 @@
 		</select>
 	</label>
 	<label style="position: relative">
-		<textarea
-			on:change={({ target }) => (content = target.value)}
-			name="content"
-			bind:value={content}
-		/>
-		<p style="position: absolute; bottom: 0px; right: 0px; padding: 0.5em 0.25em;">
+		<textarea name="content" bind:value={content} class={form?.error && 'error'} />
+		<p style="position: absolute; bottom: 0px; right: 0px; padding: 0.5rem 0.25rem;">
 			({content.length}/{totalChar})
 		</p>
 	</label>
-	<button type="submit" disabled={loading}>Create</button>
+	<button type="submit" disabled={$loading}>Create</button>
 </form>
+<hr style="border-top: 1px solid gray" />
 {#if form?.error}
 	<p class="error-message">{form.error}</p>
 {/if}
@@ -60,7 +56,17 @@
 				{createdAt != updatedAt && `Updated ${new Date(updatedAt).toLocaleDateString()}`}
 			</p>
 			<div>
-				<form action="?/update" method="POST">
+				<form
+					action="?/update"
+					method="POST"
+					use:enhance={() => {
+						loading.set(true);
+						return async ({ update }) => {
+							await update();
+							loading.set(false);
+						};
+					}}
+				>
 					<input value={learningId} type="hidden" name="learningId" />
 					<label>
 						<select name="topicId" value={topicId}>
@@ -73,9 +79,11 @@
 						<textarea name="content" value={content} />
 					</label>
 					<div class="button-group">
-						<button type="submit">Save</button>
-						<button type="submit" formaction="?/resetEdit">Reset</button>
-						<button class="btn-danger" type="submit" formaction="?/delete">Delete</button>
+						<button type="submit" disabled={$loading}>Save</button>
+						<button type="submit" formaction="?/resetEdit" disabled={$loading}>Reset</button>
+						<button class="btn-danger" type="submit" formaction="?/delete" disabled={$loading}
+							>Delete</button
+						>
 					</div>
 				</form>
 			</div>
@@ -92,14 +100,34 @@
 			<div>
 				<p>{content}</p>
 				{#if deletedAt}
-					<form method="POST" action="?/undelete">
+					<form
+						method="POST"
+						action="?/undelete"
+						use:enhance={() => {
+							loading.set(true);
+							return async ({ update }) => {
+								await update();
+								loading.set(false);
+							};
+						}}
+					>
 						<input value={learningId} type="hidden" name="learningId" />
-						<button class="edit btn-success" type="submit">Restore</button>
+						<button class="edit btn-success" type="submit" disabled={$loading}>Restore</button>
 					</form>
 				{:else}
-					<form method="POST" action="?/requestEdit">
+					<form
+						method="POST"
+						action="?/requestEdit"
+						use:enhance={() => {
+							loading.set(true);
+							return async ({ update }) => {
+								await update();
+								loading.set(false);
+							};
+						}}
+					>
 						<input value={learningId} type="hidden" name="learningId" />
-						<button class="edit" type="submit">Edit</button>
+						<button class="edit" type="submit" disabled={$loading}>Edit</button>
 					</form>
 				{/if}
 			</div>
@@ -130,10 +158,11 @@
 		min-width: 100%;
 		display: flex;
 		flex-direction: column;
+		gap: 0.25rem;
 	}
 	.button-group {
 		display: flex;
 		flex-direction: row;
-		gap: 0.25em;
+		gap: 0.25rem;
 	}
 </style>

@@ -56,19 +56,25 @@
 		max-width: 100%;
 	}
 	:global(input, button, textarea, select) {
-		padding: 0.25em 0.5em;
-		border-radius: 0.125em;
+		padding: 0.25rem 0.5rem;
+		border-radius: 0.125rem;
 		font: inherit;
 		width: fit-content;
 	}
 
 	:global(textarea) {
 		width: 100%;
-		height: 8em;
 		resize: none;
+	}
+	:global(textarea:focus) {
+		height: 8rem;
 	}
 
 	:global(textarea .error) {
+		border: 2px solid var(--danger-color);
+	}
+
+	:global(textarea:focus .error) {
 		border: 2px solid var(--danger-color);
 	}
 
@@ -87,7 +93,7 @@
 	}
 	:global(ul) {
 		list-style: none;
-		text-indent: -1em;
+		text-indent: -1rem;
 	}
 	:global(li::before) {
 		content: '✽ ';
@@ -116,16 +122,16 @@
 		justify-content: space-between;
 	}
 	:global(.icon) {
-		width: 12em;
-		height: 8em;
+		width: 12rem;
+		height: 8rem;
 	}
 	:global(.display-box) {
 		display: flex;
 		flex-direction: columns;
-		padding: 1em;
+		padding: 1rem;
 		background: var(--primary-color);
 		flex-direction: column;
-		border-radius: 0.5em;
+		border-radius: 0.5rem;
 	}
 	:global(.btn-danger) {
 		background-color: var(--danger-color);
@@ -146,17 +152,51 @@
 		animation-name: animate-fade;
 		animation-fill-mode: backwards;
 	}
-
 	main {
 		display: flex;
 		flex-direction: column;
-		padding-top: 2em;
-		gap: 1em;
+		padding-right: 6rem;
+		padding-left: 6rem;
+		padding-top: 2rem;
+		min-width: 768px;
+		max-width: 768px;
+		gap: 1rem;
+	}
+	@media only screen and (max-width: 1536px) {
+		main {
+			padding-right: 6rem;
+			padding-left: 6rem;
+		}
+	}
+	@media only screen and (max-width: 1280px) {
+		main {
+			padding-right: 5rem;
+			padding-left: 5rem;
+		}
+	}
+	@media only screen and (max-width: 1024px) {
+		main {
+			padding-right: 4rem;
+			padding-left: 4rem;
+		}
+	}
+	@media only screen and (max-width: 768px) {
+		main {
+			padding-right: 2rem;
+			padding-left: 2rem;
+			min-width: 100%;
+		}
+	}
+	@media only screen and (max-width: 640px) {
+		main {
+			padding-right: 0.5rem;
+			padding-left: 0.5rem;
+		}
 	}
 	header {
 		display: flex;
 		align-items: center;
-		gap: 1em;
+		gap: 1rem;
 		border-style: solid;
 		border-bottom: 1px;
 		border-color: var(--secondary-color);

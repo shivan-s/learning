@@ -1,5 +1,29 @@
-import type { PageServerLoad } from './$types';
+import type { PageServerLoad, Actions } from './$types';
 import connection from '$lib/db';
+import { sql } from 'kysely';
+
+export const actions = {
+	randomLearning: async ({ platform }) => {
+		const db = connection(platform?.env?.DB);
+		const randomLearning = await db
+			.selectFrom('learnings')
+			.where('learnings.deleted_at', 'is', null)
+			.innerJoin('topics', 'learnings.topic_id', 'topics.id')
+			.orderBy(sql`random()`)
+			.select([
+				'learnings.created_at as createdAt',
+				'learnings.updated_at as updatedAt',
+				'learnings.content as content',
+				'topics.name as topic'
+			])
+			.limit(1)
+			.executeTakeFirst();
+		return {
+			success: true,
+			randomLearning
+		};
+	}
+} satisfies Actions;
 
 export const load = (async ({ platform, url }) => {
 	const q = url.searchParams.get('q');
@@ -23,12 +47,30 @@ export const load = (async ({ platform, url }) => {
 		.$if(q !== null && q.length > 0, (qb) =>
 			qb.where(({ or, cmpr }) => or([cmpr('content', 'like', q), cmpr('topics.name', 'like', q)]))
 		)
-		.$if(topicFilter !== null, (qb) => qb.where('topics.id', '=', parseInt(topicFilter ?? '')))
+		.$if(topicFilter !== null && topicFilter !== '-1', (qb) =>
+			qb.where('topics.id', '=', parseInt(topicFilter ?? ''))
+		)
 		.orderBy('createdAt', 'desc')
 		.execute();
+	const randomLearning = await db
+		.selectFrom('learnings')
+		.where('learnings.deleted_at', 'is', null)
+		.innerJoin('topics', 'learnings.topic_id', 'topics.id')
+		.orderBy(sql`random()`)
+		.select([
+			'learnings.created_at as createdAt',
+			'learnings.updated_at as updatedAt',
+			'learnings.content as content',
+			'topics.name as topic'
+		])
+		.limit(1)
+		.executeTakeFirst();
 	return {
 		topics,
-		learnings
+		learnings,
+		randomLearning,
+		q,
+		topicId: topicFilter
 	};
 }) satisfies PageServerLoad;
 

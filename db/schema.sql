@@ -29,4 +29,8 @@ INSERT OR IGNORE INTO learnings (id, content, topic_id) VALUES (
 INSERT OR IGNORE INTO topics (id, name) VALUES (2, 'Programming'),
 (3, 'Golf'),
 (4, 'Flying'),
-(5, 'Brazillian Jit-Jitsu');
+(5, 'Brazillian Jit-Jitsu'),
+(6, 'Dancing'),
+(7, 'Books'),
+(8, 'Film'),
+(9, 'Misc')
