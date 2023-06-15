@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { ActionData, PageData } from './$types';
-	import { fade } from 'svelte/transition';
 	import { loading } from '$lib/stores';
 
 	export let data: PageData;
@@ -34,23 +33,20 @@
 		</select>
 	</label>
 	<label style="position: relative">
-		<textarea name="content" bind:value={content} class={form?.error && 'error'} />
+		<textarea class={form?.error?.content && 'error'} name="content" bind:value={content} />
 		<p style="position: absolute; bottom: 0px; right: 0px; padding: 0.5rem 0.25rem;">
 			({content.length}/{totalChar})
 		</p>
 	</label>
 	<button type="submit" disabled={$loading}>Create</button>
+	{#if form?.error?.content}
+		<span class="error-message">{form.error.content.join('. ')}</span>
+	{/if}
 </form>
 <hr style="border-top: 1px solid gray" />
-{#if form?.error}
-	<p class="error-message">{form.error}</p>
-{/if}
 <div>
 	{#each learnings as { learningId, createdAt, updatedAt, deletedAt, topic, topicId, content }}
-		<div
-			in:fade
-			class={form?.requestEditLearning?.learningId === learningId ? 'visible' : 'hidden'}
-		>
+		<div class={form?.requestEditLearning?.learningId === learningId ? 'visible' : 'hidden'}>
 			<p>
 				{new Date(createdAt).toLocaleDateString()}
 				{createdAt != updatedAt && `Updated ${new Date(updatedAt).toLocaleDateString()}`}
@@ -89,7 +85,6 @@
 			</div>
 		</div>
 		<div
-			in:fade
 			class="{form?.requestEditLearning?.learningId === learningId
 				? 'hidden'
 				: 'visible'} learning {deletedAt && 'deleted'}

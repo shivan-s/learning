@@ -1,10 +1,14 @@
+<script>
+	import { fade } from 'svelte/transition';
+</script>
+
 <svelte:head><title>Shivan's Learning</title></svelte:head>
 
 <header>
 	<h1><a href="/">Learning</a></h1>
-	<a href="/auth/create">Create</a>
+	<a data-sveltekit-reload href="/auth/create">Create</a>
 </header>
-<main>
+<main transition:fade>
 	<slot />
 </main>
 <footer />
@@ -65,17 +69,7 @@
 	:global(textarea) {
 		width: 100%;
 		resize: none;
-	}
-	:global(textarea:focus) {
 		height: 8rem;
-	}
-
-	:global(textarea .error) {
-		border: 2px solid var(--danger-color);
-	}
-
-	:global(textarea:focus .error) {
-		border: 2px solid var(--danger-color);
 	}
 
 	:global(button) {
@@ -152,6 +146,12 @@
 		animation-name: animate-fade;
 		animation-fill-mode: backwards;
 	}
+	:global(.error) {
+		border: 2px solid var(--danger-color);
+	}
+	:global(.error-message) {
+		color: var(--danger-text);
+	}
 	main {
 		display: flex;
 		flex-direction: column;
@@ -197,15 +197,6 @@
 		display: flex;
 		align-items: center;
 		gap: 1rem;
-		border-style: solid;
-		border-bottom: 1px;
-		border-color: var(--secondary-color);
-	}
-	header a {
-		border-style: solid;
-		border-color: primary;
-		border-left: 1px;
-		border-color: var(--secondary-color);
 	}
 
 	@keyframes -global-animate-fade {

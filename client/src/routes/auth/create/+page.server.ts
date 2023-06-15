@@ -23,9 +23,10 @@ export const actions = {
 			content
 		});
 		if (!result.success) {
+			const error = result.error.flatten().fieldErrors;
 			return {
 				success: false,
-				error: JSON.stringify(result.error),
+				error,
 				topicId,
 				content
 			};

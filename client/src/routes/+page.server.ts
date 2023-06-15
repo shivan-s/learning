@@ -25,15 +25,23 @@ export const actions = {
 	}
 } satisfies Actions;
 
-export const load = (async ({ platform, url }) => {
+export const load = (async ({ platform, url, locals }) => {
+	const { LIMIT } = locals;
 	const q = url.searchParams.get('q');
 	const topicFilter = url.searchParams.get('topic');
+	const cursor = url.searchParams.get('cursor');
 	const db = connection(platform?.env?.DB);
+	const { count } = db.fn;
 	const topics = await db
 		.selectFrom('topics')
 		.where('deleted_at', 'is', null)
 		.select(['name', 'id'])
 		.execute();
+	const learningsTotal = await db
+		.selectFrom('learnings')
+		.where('learnings.deleted_at', 'is', null)
+		.select(count('id').as('count'))
+		.executeTakeFirst();
 	const learnings = await db
 		.selectFrom('learnings')
 		.where('learnings.deleted_at', 'is', null)
@@ -42,7 +50,8 @@ export const load = (async ({ platform, url }) => {
 			'learnings.created_at as createdAt',
 			'learnings.updated_at as updatedAt',
 			'learnings.content as content',
-			'topics.name as topic'
+			'topics.name as topic',
+			count('learnings.id').as('numLearnings')
 		])
 		.$if(q !== null && q.length > 0, (qb) =>
 			qb.where(({ or, cmpr }) => or([cmpr('content', 'like', q), cmpr('topics.name', 'like', q)]))
@@ -51,7 +60,10 @@ export const load = (async ({ platform, url }) => {
 			qb.where('topics.id', '=', parseInt(topicFilter ?? ''))
 		)
 		.orderBy('createdAt', 'desc')
+		.limit(LIMIT)
+		.$if(cursor !== null, (qb) => qb.offset((parseInt(cursor || '0') || 0) * LIMIT))
 		.execute();
+	const nextCursor = parseInt(cursor || '0') || 0 + 1;
 	const randomLearning = await db
 		.selectFrom('learnings')
 		.where('learnings.deleted_at', 'is', null)
@@ -66,6 +78,8 @@ export const load = (async ({ platform, url }) => {
 		.limit(1)
 		.executeTakeFirst();
 	return {
+		learningsTotal,
+		nextCursor,
 		topics,
 		learnings,
 		randomLearning,
@@ -73,35 +87,3 @@ export const load = (async ({ platform, url }) => {
 		topicId: topicFilter
 	};
 }) satisfies PageServerLoad;
-
-/* const learnings: Learning[] = [ */
-/*   { */
-/*     date: '2023-05-28', */
-/*     topic: 'Flying', */
-/*     learning: */
-/*       'Learning about climbing and descending. Remember the pull the carb out when below 1300 RPMs!' */
-/*   }, */
-/*   { */
-/*     date: '2023-05-28', */
-/*     topic: 'Golf', */
-/*     learning: */
-/*       'Making good contact. Focus on reducing the wrist action. Practice but make sure you hit the ground.' */
-/*   }, */
-/*   { */
-/*     date: '2023-05-28', */
-/*     topic: 'Brazilian Jiu Jitsu', */
-/*     learning: */
-/*       "Fun roll. Maintain a good base. Do not stay on back. Try and antipate opponent's move and don't stop moving." */
-/*   }, */
-/*   { */
-/*     date: '2023-05-29', */
-/*     topic: 'Brazilian Jiu Jitsu', */
-/*     learning: 'Learnt about deep half guard from mount and half guard.' */
-/*   }, */
-/*   { */
-/*     date: '2023-05-29', */
-/*     topic: 'Programming', */
-/*     learning: */
-/*       'The Alignment Problem: Reinforcement learning - incentivise for A but end up getting B. Deep Learning with Python: Gradient descent, backpropagation, overview. Rust: tui-rs' */
-/*   } */
-/* ]; */
