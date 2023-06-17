@@ -7,6 +7,7 @@
 	export let form: ActionData;
 
 	let content = form?.content ?? '';
+	let media: File;
 
 	$: ({ learnings, topics, totalChar } = data);
 
@@ -37,6 +38,12 @@
 		<p style="position: absolute; bottom: 0px; right: 0px; padding: 0.5rem 0.25rem;">
 			({content.length}/{totalChar})
 		</p>
+	</label>
+	<label>
+		<input type="file" name="media" bind:value={media} />
+		{#if media}
+			<img src={media.name} alt="Uploaded" />
+		{/if}
 	</label>
 	<button type="submit" disabled={$loading}>Create</button>
 	{#if form?.error?.content}
