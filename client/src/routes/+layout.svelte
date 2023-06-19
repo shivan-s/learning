@@ -1,12 +1,18 @@
-<script>
+<script lang="ts">
 	import { fade } from 'svelte/transition';
+	import { page } from '$app/stores';
 </script>
 
 <svelte:head><title>Shivan's Learning</title></svelte:head>
 
 <header>
 	<h1><a href="/">Learning</a></h1>
-	<a data-sveltekit-reload href="/auth/create">Create</a>
+	<a href="/list" class={$page.url.pathname === '/list' ? 'active' : ''}>List</a>
+	<a
+		data-sveltekit-reload
+		href="/auth/create"
+		class={$page.url.pathname === '/auth/create' ? 'active' : ''}>Create</a
+	>
 </header>
 <main transition:fade>
 	<slot />
@@ -96,6 +102,12 @@
 	:global(h1 a) {
 		text-decoration: none;
 		color: var(--text-color);
+	}
+	:global(hr) {
+		border-top: 1px solid var(--text-color);
+	}
+	:global(i) {
+		color: var(--text-accent-color);
 	}
 	:global(.flex) {
 		display: flex;
@@ -197,6 +209,10 @@
 		display: flex;
 		align-items: center;
 		gap: 1rem;
+	}
+
+	.active {
+		text-decoration: underline;
 	}
 
 	@keyframes -global-animate-fade {
