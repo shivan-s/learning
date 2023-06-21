@@ -1,6 +1,7 @@
-import { Kysely, type Generated } from 'kysely';
+import { Kysely, type Generated, SqliteDialect } from 'kysely';
 import { D1Dialect } from 'kysely-d1';
 import type { D1Database } from '@cloudflare/workers-types';
+/* import dummyDb from './dummy'; */
 
 interface Topic {
 	id: Generated<number>;
@@ -25,10 +26,10 @@ export interface Database {
 }
 
 export default function connection(db: D1Database) {
+	/* const dialect = db ? new D1Dialect({ database: db }) : new SqliteDialect({ database: dummyDb() }); */
+	const dialect = db && new D1Dialect({ database: db });
 	if (!db) {
-		console.error('Database is ', db);
-		/* throw error(500, 'No DB connection'); */
+		console.warn('Connecting to Dummy database');
 	}
-	console.log('connecting to db...', db);
-	return new Kysely<Database>({ dialect: new D1Dialect({ database: db }) });
+	return new Kysely<Database>({ dialect });
 }

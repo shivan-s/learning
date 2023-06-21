@@ -1,42 +1,35 @@
 <script lang="ts">
-	import type { PageData, ActionData } from './$types';
-	import { loading } from '$lib/stores';
-	import { enhance } from '$app/forms';
+	import type { PageData } from './$types';
 	import Learning from '$components/Learning.svelte';
+	import Loading from '$components/Loading.svelte';
+	import Error from '$components/Error.svelte';
 
 	export let data: PageData;
-	export let form: ActionData;
 
 	$: ({ randomLearning, learningsCount } = data);
 
-	if (form?.randomLearning) {
-		randomLearning = form.randomLearning;
-	}
-
 	/* DEBUGGING */
-	console.log('form', form);
-	console.log('data', data);
+	/* console.log('form', form); */
+	/* console.log('data', data); */
 </script>
 
-{#if randomLearning}
-	<form
-		method="POST"
-		action="?/randomLearning"
-		use:enhance={() => {
-			loading.set(true);
-			return async ({ update }) => {
-				await update();
-				loading.set(false);
-			};
-		}}
-	>
-		<button type="submit" disabled={$loading}>Draw</button> from
-		{learningsCount === 1 ? `${learningsCount} learning.` : `${learningsCount - 1} learnings.`}
+<div class="flex center">
+	<form method="GET" data-sveltekit-reload>
+		<button type="submit">Draw</button>
 	</form>
-	<hr />
+	{#await learningsCount}
+		<Loading />
+	{:then { count }}
+		<p>from {count === 1 ? `${count} learning.` : `${count - 1} learnings.`}</p>
+	{:catch error}
+		<Error {error} />
+	{/await}
+</div>
+<hr />
+{#await randomLearning}
+	<Loading />
+{:then randomLearning}
 	<Learning learning={randomLearning} />
-{:else}
-	<p style="text-align: center">
-		No learnings. Please <a href="/auth/create/">create</a> some learnings to share.
-	</p>
-{/if}
+{:catch error}
+	<Error {error} />
+{/await}
