@@ -49,4 +49,25 @@ export default class Learning extends BaseModel {
 		const { count } = this.db.fn;
 		return this.#connect.select(count('learnings.id').as('count')).executeTakeFirstOrThrow();
 	}
+
+	create(params: { topicId: number; content: string }) {
+		const { topicId, content } = params;
+		return this.db
+			.insertInto('learnings')
+			.values(({ selectFrom }) => ({
+				topic_id: selectFrom('topics').where('id', '=', topicId).select(['id']).limit(1),
+				content: content
+			}))
+			.returning((eb) => [
+				'learnings.id as learningId',
+				'learnings.created_at as createdAt',
+				'learnings.content as content',
+				eb
+					.selectFrom(['topics', 'learnings'])
+					.whereRef('learnings.topic_id', '=', 'topics.id')
+					.select('topics.name as topic')
+					.limit(1)
+			])
+			.executeTakeFirstOrThrow();
+	}
 }

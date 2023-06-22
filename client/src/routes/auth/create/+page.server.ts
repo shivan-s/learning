@@ -1,5 +1,5 @@
 import type { Actions, PageServerLoad } from './$types';
-import connection from '$lib/db';
+import connection, { Learning } from '$lib/db';
 import { z } from 'zod';
 import { error } from '@sveltejs/kit';
 
@@ -31,27 +31,11 @@ export const actions = {
 				content
 			};
 		}
-		const db = connection(platform?.env?.DB);
-		const newLearning = await db
-			.insertInto('learnings')
-			.values(({ selectFrom }) => ({
-				topic_id: selectFrom('topics')
-					.where('id', '=', result.data.topicId)
-					.select(['id'])
-					.limit(1),
-				content: result.data.content
-			}))
-			.returning((eb) => [
-				'learnings.id as learningId',
-				'learnings.created_at as createdAt',
-				'learnings.content as content',
-				eb
-					.selectFrom(['topics', 'learnings'])
-					.whereRef('learnings.topic_id', '=', 'topics.id')
-					.select('topics.name as topic')
-					.limit(1)
-			])
-			.executeTakeFirstOrThrow();
+		const learnings = new Learning(platform?.env?.DB);
+		const newLearning = learnings.create({
+			topicId: result.data.topicId,
+			content: result.data.content
+		});
 		return {
 			success: true,
 			newLearning,
