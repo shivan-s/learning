@@ -1,14 +1,11 @@
 <script lang="ts">
 	import fromNow from '$lib/utils/fromNow';
 
-	export let learning: {
-		createdAt: Date;
-		updatedAt: Date;
-		topic: string;
-		content: string;
-	};
-
-	const { topic, createdAt, content } = learning;
+	export let createdAt: Date;
+	/* export let updatedAt: Date; */
+	export let topic: string;
+	export let content: string;
+	/* export let createMode: boolean = false; */
 </script>
 
 <div>

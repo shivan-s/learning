@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { loading } from '$lib/stores';
 	import Learning from '$components/Learning.svelte';
+	import Filter from '$components/Filter.svelte';
 
 	export let data: PageData;
 
@@ -11,19 +11,10 @@
 	/* console.log('data', data); */
 </script>
 
-<form method="GET">
-	<select name="topic" value={topicId ?? '-1'}>
-		<option value="-1">All</option>
-		{#each topics as { id, name }}
-			<option value={String(id)}>{name}</option>
-		{/each}
-	</select>
-	<input type="text" name="q" value={q ?? ''} />
-	<button type="submit" disabled={$loading}>Search</button>
-</form>
+<Filter {q} {topicId} {topics} />
 <hr />
 {#each learnings as learning}
-	<Learning {learning} />
+	<Learning {...learning} />
 {/each}
 {#if nextCursor}
 	<form method="GET">

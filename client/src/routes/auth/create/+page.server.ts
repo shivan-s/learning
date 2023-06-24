@@ -1,5 +1,4 @@
 import type { Actions, PageServerLoad } from './$types';
-import connection, { Learning } from '$lib/db';
 import { z } from 'zod';
 import { error } from '@sveltejs/kit';
 
@@ -14,7 +13,7 @@ const LearningSchema = z.object({
 });
 
 export const actions = {
-	create: async ({ request, platform }) => {
+	create: async ({ request, locals }) => {
 		const formData = await request.formData();
 		const topicId = formData.get('topicId');
 		const content = formData.get('content');
@@ -31,8 +30,8 @@ export const actions = {
 				content
 			};
 		}
-		const learnings = new Learning(platform?.env?.DB);
-		const newLearning = learnings.create({
+		const { learning } = locals.models;
+		const newLearning = await learning.create({
 			topicId: result.data.topicId,
 			content: result.data.content
 		});
@@ -43,7 +42,7 @@ export const actions = {
 			content
 		};
 	},
-	update: async ({ request, platform }) => {
+	update: async ({ request, locals }) => {
 		const formData = await request.formData();
 		const learningId = formData.get('learningId');
 		const topicId = formData.get('topicId');
@@ -61,28 +60,12 @@ export const actions = {
 				content
 			};
 		}
-		const db = connection(platform?.env?.DB);
-		const updatedLearning = await db
-			.updateTable('learnings')
-			.set(({ selectFrom }) => ({
-				topic_id: selectFrom('topics')
-					.where('id', '=', result.data.topicId)
-					.select(['id'])
-					.limit(1),
-				content: result.data.content
-			}))
-			.where('learnings.id', '=', result.data.learningId)
-			.returning((eb) => [
-				'learnings.id as learningId',
-				'learnings.created_at as createdAt',
-				'learnings.content as content',
-				eb
-					.selectFrom(['topics', 'learnings'])
-					.whereRef('learnings.topic_id', '=', 'topics.id')
-					.select('topics.name as topic')
-					.limit(1)
-			])
-			.executeTakeFirstOrThrow();
+		const { learning } = locals.models;
+		const updatedLearning = await learning.update({
+			learningId: result.data.learningId,
+			content: result.data.content,
+			topicId: result.data.topicId
+		});
 		return {
 			sucess: true,
 			updatedLearning,
@@ -90,7 +73,7 @@ export const actions = {
 			content
 		};
 	},
-	delete: async ({ request, platform }) => {
+	delete: async ({ request, locals }) => {
 		const formData = await request.formData();
 		const learningId = formData.get('learningId');
 		const result = LearningSchema.pick({ learningId: true }).safeParse({ learningId });
@@ -101,30 +84,15 @@ export const actions = {
 				learningId
 			};
 		}
-		const db = connection(platform?.env?.DB);
-		const now = z.coerce.string().parse(new Date(Date.now()));
-		const deletedLearning = await db
-			.updateTable('learnings')
-			.set({ deleted_at: now })
-			.where('learnings.id', '=', result.data.learningId)
-			.returning((eb) => [
-				'learnings.id as learningId',
-				'learnings.created_at as createdAt',
-				'learnings.content as content',
-				eb
-					.selectFrom(['topics', 'learnings'])
-					.whereRef('learnings.topic_id', '=', 'topics.id')
-					.select('topics.name as topic')
-					.limit(1)
-			])
-			.executeTakeFirstOrThrow();
+		const { learning } = locals.models;
+		const deletedLearning = await learning.delete({ learningId: result.data.learningId });
 		return {
 			success: true,
 			deletedLearning,
 			learningId
 		};
 	},
-	undelete: async ({ request, platform }) => {
+	undelete: async ({ request, locals }) => {
 		const formData = await request.formData();
 		const learningId = formData.get('learningId');
 		const result = LearningSchema.pick({ learningId: true }).safeParse({ learningId });
@@ -135,74 +103,45 @@ export const actions = {
 				learningId
 			};
 		}
-		const db = connection(platform?.env?.DB);
-		const undeletedLearning = await db
-			.updateTable('learnings')
-			.set({ deleted_at: null })
-			.where('learnings.id', '=', result.data.learningId)
-			.returning((eb) => [
-				'id as learningId',
-				'created_at as createdAt',
-				'content as content',
-				eb
-					.selectFrom(['topics', 'learnings'])
-					.whereRef('learnings.topic_id', '=', 'topics.id')
-					.select('name as topic')
-					.limit(1)
-			])
-			.executeTakeFirstOrThrow();
+		const { learning } = locals.models;
+		const undeletedLearning = learning.undelete({ learningId: result.data.learningId });
 		return {
 			success: true,
 			undeletedLearning,
 			learningId
 		};
 	},
-	requestEdit: async ({ request, platform }) => {
-		const db = connection(platform?.env?.DB);
+	requestEdit: async ({ request, locals }) => {
 		const formData = await request.formData();
 		const result = z.coerce.number().safeParse(formData.get('learningId'));
 		if (!result.success) {
 			throw error(400, 'Invalid Id');
 		}
-		const learningId = result.data;
-		const learning = await db
-			.selectFrom('learnings')
-			.where('learnings.deleted_at', 'is', null)
-			.where('learnings.id', '=', learningId)
-			.innerJoin('topics', 'learnings.topic_id', 'topics.id')
-			.select([
-				'learnings.id as learningId',
-				'learnings.created_at as createdAt',
-				'learnings.updated_at as updatedAt',
-				'learnings.content as content',
-				'topics.name as topic'
-			])
-			.executeTakeFirstOrThrow();
-		return { success: true, requestEditLearning: learning };
+		const { learning } = locals.models;
+		const requestEditLearning = learning.getbyId(result.data);
+		return { success: true, requestEditLearning };
 	},
 	resetEdit: async () => {
 		return { success: true, requestEditLearning: null };
 	}
 } satisfies Actions;
 
-export const load = (async ({ platform }) => {
-	const db = connection(platform?.env?.DB);
-	const topics = await db.selectFrom('topics').select(['name', 'id']).execute();
-	const learnings = await db
-		.selectFrom('learnings')
-		.innerJoin('topics', 'learnings.topic_id', 'topics.id')
-		.select([
-			'learnings.id as learningId',
-			'learnings.created_at as createdAt',
-			'learnings.updated_at as updatedAt',
-			'learnings.deleted_at as deletedAt',
-			'learnings.content as content',
-			'topics.name as topic',
-			'topics.id as topicId'
-		])
-		.orderBy('createdAt', 'desc')
-		.execute();
+export const load = (async ({ url, locals }) => {
+	const { LIMIT } = locals;
+	const q = url.searchParams.get('q');
+	const topicFilter = url.searchParams.get('topic');
+	const { topic, learning } = locals.models;
+	const topics = topic.getAll();
+	const learnings = learning.getAll({
+		limit: LIMIT,
+		q: null,
+		topicFilter: null,
+		cursor: null,
+		deleted: true
+	});
 	return {
+		q,
+		topicId: topicFilter,
 		topics,
 		learnings,
 		totalChar: 255

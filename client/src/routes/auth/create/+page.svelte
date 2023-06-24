@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms';
 	import type { ActionData, PageData } from './$types';
 	import { loading } from '$lib/stores';
+	import Filter from '$components/Filter.svelte';
 
 	export let data: PageData;
 	export let form: ActionData;
@@ -9,10 +10,11 @@
 	let content = form?.content ?? '';
 	let media: File;
 
-	$: ({ learnings, topics, totalChar } = data);
+	$: ({ learnings, topics, totalChar, q, topicId } = data);
 
-	console.log(data);
-	console.log(form);
+	// DEBUGGING
+	/* console.log(data); */
+	/* console.log(form); */
 </script>
 
 <form
@@ -50,7 +52,9 @@
 		<span class="error-message">{form.error.content.join('. ')}</span>
 	{/if}
 </form>
-<hr style="border-top: 1px solid gray" />
+<hr />
+<Filter {topics} {topicId} {q} />
+<hr />
 <div>
 	{#each learnings as { learningId, createdAt, updatedAt, deletedAt, topic, topicId, content }}
 		<div class={form?.requestEditLearning?.learningId === learningId ? 'visible' : 'hidden'}>
