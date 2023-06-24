@@ -26,8 +26,8 @@ export interface Database {
 }
 
 export default function connection(db: D1Database) {
-	console.log(SqliteDialect);
-	const dialect = db && new D1Dialect({ database: db });
+	/* console.log(SqliteDialect); */
+	const dialect = new D1Dialect({ database: db });
 	/* const dialect = db ? new D1Dialect({ database: db }) : new SqliteDialect({ database: dummyDb() }); */
 	if (!db) {
 		console.warn('Connecting to Dummy database');
