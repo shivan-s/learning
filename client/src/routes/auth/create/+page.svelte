@@ -13,8 +13,8 @@
 	$: ({ learnings, topics, totalChar, q, topicId } = data);
 
 	// DEBUGGING
-	/* console.log(data); */
-	/* console.log(form); */
+	/* console.log('data', data); */
+	/* console.log('form', form); */
 </script>
 
 <form
@@ -98,8 +98,7 @@
 		<div
 			class="{form?.requestEditLearning?.learningId === learningId
 				? 'hidden'
-				: 'visible'} learning {deletedAt && 'deleted'}
-      "
+				: 'visible'} learning {deletedAt && 'deleted'}"
 		>
 			<p>{new Date(createdAt).toLocaleDateString()}</p>
 			<strong>{topic}</strong>

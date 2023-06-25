@@ -5,20 +5,35 @@
 
 	export let data: PageData;
 
-	$: ({ topics, topicId, q, nextCursor, learnings } = data);
+	$: ({ topics, topicId, q, nextCursor, previousCursor, learnings } = data);
 
 	/* DEBUGGING */
-	/* console.log('data', data); */
+	console.log('data', data);
 </script>
 
 <Filter {q} {topicId} {topics} />
 <hr />
+<div class="flex" style="justify-content: space-between">
+	<form method="GET" data-sveltekit-noscroll>
+		<input name="cursor" type="hidden" value={String(previousCursor)} />
+		<button type="submit" disabled={previousCursor === undefined}>Previous</button>
+	</form>
+	<form method="GET" data-sveltekit-noscroll>
+		<input name="cursor" type="hidden" value={String(nextCursor)} />
+		<button type="submit" disabled={nextCursor === undefined}>Next</button>
+	</form>
+</div>
+<hr />
 {#each learnings as learning}
 	<Learning {...learning} />
 {/each}
-{#if nextCursor}
-	<form method="GET">
-		<input name="cursor" type="hidden" value={String(nextCursor)} />
-		<button type="submit">Load more</button>
+<div class="flex" style="justify-content: space-between">
+	<form method="GET" data-sveltekit-noscroll>
+		<input name="cursor" type="hidden" value={String(previousCursor)} />
+		<button type="submit" disabled={previousCursor === undefined}>Previous</button>
 	</form>
-{/if}
+	<form method="GET" data-sveltekit-noscroll>
+		<input name="cursor" type="hidden" value={String(nextCursor)} />
+		<button type="submit" disabled={nextCursor === undefined}>Next</button>
+	</form>
+</div>

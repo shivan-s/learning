@@ -10,6 +10,7 @@ export default class Learning extends BaseModel {
 			'learnings.id as learningId',
 			'learnings.created_at as createdAt',
 			'learnings.updated_at as updatedAt',
+			'learnings.deleted_at as deletedAt',
 			'learnings.content as content',
 			'topics.name as topic'
 		]);
@@ -90,9 +91,11 @@ export default class Learning extends BaseModel {
 	}
 	update(params: { learningId: number; topicId: number; content: string }) {
 		const { topicId, learningId, content } = params;
+		const now = new Date().toISOString();
 		return this.db
 			.updateTable('learnings')
 			.set(({ selectFrom }) => ({
+				updated_at: now,
 				topic_id: selectFrom('topics').where('id', '=', topicId).select(['id']).limit(1),
 				content
 			}))
@@ -111,7 +114,7 @@ export default class Learning extends BaseModel {
 	}
 	delete(params: { learningId: number }) {
 		const { learningId } = params;
-		const now = new Date(Date.now());
+		const now = new Date().toISOString();
 		return this.db
 			.updateTable('learnings')
 			.set({ deleted_at: now })

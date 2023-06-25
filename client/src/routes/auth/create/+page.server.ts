@@ -118,7 +118,7 @@ export const actions = {
 			throw error(400, 'Invalid Id');
 		}
 		const { learning } = locals.models;
-		const requestEditLearning = learning.getbyId(result.data);
+		const requestEditLearning = await learning.getbyId(result.data);
 		return { success: true, requestEditLearning };
 	},
 	resetEdit: async () => {

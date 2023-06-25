@@ -117,6 +117,7 @@
 	}
 	:global(.row) {
 		flex-direction: row;
+		gap: 0.25rem;
 	}
 	:global(.col) {
 		flex-direction: column;
