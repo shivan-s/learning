@@ -22,7 +22,7 @@ export const actions = {
 			content
 		});
 		if (!result.success) {
-			const error = result.error.flatten().fieldErrors;
+			const error = { create: result.error.flatten().fieldErrors };
 			return {
 				success: false,
 				error,
@@ -53,9 +53,10 @@ export const actions = {
 			content
 		});
 		if (!result.success) {
+			const error = { update: result.error.flatten().fieldErrors };
 			return {
 				success: false,
-				error: JSON.stringify(error),
+				error,
 				topicId,
 				content
 			};
@@ -67,7 +68,7 @@ export const actions = {
 			topicId: result.data.topicId
 		});
 		return {
-			sucess: true,
+			success: true,
 			updatedLearning,
 			topicId,
 			content
@@ -78,9 +79,10 @@ export const actions = {
 		const learningId = formData.get('learningId');
 		const result = LearningSchema.pick({ learningId: true }).safeParse({ learningId });
 		if (!result.success) {
+			const error = { delete: result.error.flatten().fieldErrors };
 			return {
 				success: false,
-				error: JSON.stringify(result.error),
+				error,
 				learningId
 			};
 		}
@@ -97,9 +99,10 @@ export const actions = {
 		const learningId = formData.get('learningId');
 		const result = LearningSchema.pick({ learningId: true }).safeParse({ learningId });
 		if (!result.success) {
+			const error = { undelete: result.error.flatten().fieldErrors };
 			return {
 				success: false,
-				error: JSON.stringify(result.error),
+				error,
 				learningId
 			};
 		}

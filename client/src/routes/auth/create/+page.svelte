@@ -8,7 +8,7 @@
 	export let form: ActionData;
 
 	let content = form?.content ?? '';
-	let media: File;
+	/* let media: File; */
 
 	$: ({ learnings, topics, totalChar, q, topicId } = data);
 
@@ -41,14 +41,14 @@
 			({content.length}/{totalChar})
 		</p>
 	</label>
-	<label>
-		<input type="file" name="media" bind:value={media} />
-		{#if media}
-			<img src={media.name} alt="Uploaded" />
-		{/if}
-	</label>
+	<!-- <label> -->
+	<!-- 	<!-- <input type="file" name="media" bind:value={media} /> --> -->
+	<!-- 	{#if media} -->
+	<!-- 		<img src={media.name} alt="Uploaded" /> -->
+	<!-- 	{/if} -->
+	<!-- </label> -->
 	<button type="submit" disabled={$loading}>Create</button>
-	{#if form?.error?.content}
+	{#if form?.error?.create?.content}
 		<span class="error-message">{form.error.content.join('. ')}</span>
 	{/if}
 </form>
