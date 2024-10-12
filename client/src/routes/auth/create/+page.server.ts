@@ -1,10 +1,10 @@
 import type { Actions, PageServerLoad } from './$types';
 import { z } from 'zod';
-import { error } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 
 const LearningSchema = z.object({
 	learningId: z.coerce.number(),
-	topicId: z.coerce.number(),
+	topicId: z.string(),
 	content: z
 		.string({ required_error: 'Required field' })
 		.trim()
@@ -12,7 +12,7 @@ const LearningSchema = z.object({
 		.min(3, { message: 'Must be greater than 3 characters' })
 });
 
-export const actions = {
+export const actions: Actions = {
 	create: async ({ request, locals }) => {
 		const formData = await request.formData();
 		const topicId = formData.get('topicId');
@@ -22,13 +22,12 @@ export const actions = {
 			content
 		});
 		if (!result.success) {
-			const error = { create: result.error.flatten().fieldErrors };
-			return {
-				success: false,
+			const error = result.error.flatten().fieldErrors;
+			return fail(400, {
 				error,
 				topicId,
 				content
-			};
+			});
 		}
 		const { learning } = locals.models;
 		const newLearning = await learning.create({
@@ -53,13 +52,12 @@ export const actions = {
 			content
 		});
 		if (!result.success) {
-			const error = { update: result.error.flatten().fieldErrors };
-			return {
-				success: false,
+			const error = result.error.flatten().fieldErrors;
+			return fail(400, {
 				error,
 				topicId,
 				content
-			};
+			});
 		}
 		const { learning } = locals.models;
 		const updatedLearning = await learning.update({
@@ -80,11 +78,11 @@ export const actions = {
 		const result = LearningSchema.pick({ learningId: true }).safeParse({ learningId });
 		if (!result.success) {
 			const error = { delete: result.error.flatten().fieldErrors };
-			return {
+			return fail(400, {
 				success: false,
 				error,
 				learningId
-			};
+			});
 		}
 		const { learning } = locals.models;
 		const deletedLearning = await learning.delete({ learningId: result.data.learningId });
@@ -100,17 +98,15 @@ export const actions = {
 		const result = LearningSchema.pick({ learningId: true }).safeParse({ learningId });
 		if (!result.success) {
 			const error = { undelete: result.error.flatten().fieldErrors };
-			return {
-				success: false,
+			return fail(400, {
 				error,
 				learningId
-			};
+			});
 		}
 		const { learning } = locals.models;
-		const undeletedLearning = learning.undelete({ learningId: result.data.learningId });
+		learning.undelete({ learningId: result.data.learningId });
 		return {
 			success: true,
-			undeletedLearning,
 			learningId
 		};
 	},
@@ -127,15 +123,15 @@ export const actions = {
 	resetEdit: async () => {
 		return { success: true, requestEditLearning: null };
 	}
-} satisfies Actions;
+};
 
-export const load = (async ({ url, locals }) => {
+export const load: PageServerLoad = async ({ url, locals }) => {
 	const { LIMIT } = locals;
 	const q = url.searchParams.get('q');
 	const topicFilter = url.searchParams.get('topic');
 	const { topic, learning } = locals.models;
 	const topics = topic.getAll();
-	const learnings = learning.getAll({
+	const learnings = await learning.getAll({
 		limit: LIMIT,
 		q: null,
 		topicFilter: null,
@@ -147,6 +143,6 @@ export const load = (async ({ url, locals }) => {
 		topicId: topicFilter,
 		topics,
 		learnings,
-		totalChar: 255
+		totalChar: 512
 	};
-}) satisfies PageServerLoad;
+};

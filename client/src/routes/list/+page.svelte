@@ -4,36 +4,43 @@
 	import Filter from '$components/Filter.svelte';
 
 	export let data: PageData;
-
-	$: ({ topics, topicId, q, nextCursor, previousCursor, learnings } = data);
-
-	/* DEBUGGING */
-	console.log('data', data);
 </script>
 
-<Filter {q} {topicId} {topics} />
+<Filter q={data.q} topicId={data.topicId} topics={data.topics} />
 <hr />
+<form id="search" method="GET" data-sveltekit-noscroll>
+	<input type="hidden" name="q" value={data.q ?? ''} />
+	<input type="hidden" name="topic" value={data.topicId ?? '-1'} />
+</form>
 <div class="flex" style="justify-content: space-between">
-	<form method="GET" data-sveltekit-noscroll>
-		<input name="cursor" type="hidden" value={String(previousCursor)} />
-		<button type="submit" disabled={previousCursor === undefined}>Previous</button>
-	</form>
-	<form method="GET" data-sveltekit-noscroll>
-		<input name="cursor" type="hidden" value={String(nextCursor)} />
-		<button type="submit" disabled={nextCursor === undefined}>Next</button>
-	</form>
+	<button
+		form="search"
+		name="cursor"
+		value={data.previousCursor?.toString()}
+		disabled={data.previousCursor === undefined}>Previous</button
+	>
+	<button
+		form="search"
+		name="cursor"
+		value={data.nextCursor?.toString()}
+		disabled={data.nextCursor === undefined}>Next</button
+	>
 </div>
 <hr />
-{#each learnings as learning}
+{#each data.learnings as learning}
 	<Learning {...learning} />
 {/each}
 <div class="flex" style="justify-content: space-between">
-	<form method="GET" data-sveltekit-noscroll>
-		<input name="cursor" type="hidden" value={String(previousCursor)} />
-		<button type="submit" disabled={previousCursor === undefined}>Previous</button>
-	</form>
-	<form method="GET" data-sveltekit-noscroll>
-		<input name="cursor" type="hidden" value={String(nextCursor)} />
-		<button type="submit" disabled={nextCursor === undefined}>Next</button>
-	</form>
+	<button
+		form="search"
+		name="cursor"
+		value={data.previousCursor?.toString()}
+		disabled={data.previousCursor === undefined}>Previous</button
+	>
+	<button
+		form="search"
+		name="cursor"
+		value={data.nextCursor?.toString()}
+		disabled={data.nextCursor === undefined}>Next</button
+	>
 </div>
