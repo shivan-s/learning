@@ -2,8 +2,9 @@ import { Learning } from '$lib/db';
 import Topic from '$lib/db/models/topic';
 import type { Handle } from '@sveltejs/kit';
 
-export const handle = (async ({ event, resolve }) => {
+export const handle: Handle = async ({ event, resolve }) => {
 	const { locals, platform } = event;
+	console.log(platform);
 	locals.LIMIT = 10;
 	locals.models = {
 		learning: new Learning(platform?.env?.DB),
@@ -11,4 +12,4 @@ export const handle = (async ({ event, resolve }) => {
 	};
 	const response = await resolve(event);
 	return response;
-}) satisfies Handle;
+};

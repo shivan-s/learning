@@ -8,13 +8,6 @@
 	export let form: ActionData;
 
 	let content = form?.content ?? '';
-	/* let media: File; */
-
-	$: ({ learnings, topics, totalChar, q, topicId } = data);
-
-	// DEBUGGING
-	/* console.log('data', data); */
-	/* console.log('form', form); */
 </script>
 
 <form
@@ -29,34 +22,25 @@
 	}}
 >
 	<label>
-		<select name="topicId" value={form?.topicId ?? topics[0].id}>
-			{#each topics as { name, id }}
+		<select name="topicId" value={form?.topicId ?? data.topics[0].id}>
+			{#each data.topics as { name, id }}
 				<option value={id}>{name}</option>
 			{/each}
 		</select>
 	</label>
-	<label style="position: relative">
-		<textarea class={form?.error?.content && 'error'} name="content" bind:value={content} />
-		<p style="position: absolute; bottom: 0px; right: 0px; padding: 0.5rem 0.25rem;">
-			({content.length}/{totalChar})
-		</p>
+	<label>
+		<textarea class={form?.content && 'error'} name="content" bind:value={content} />
 	</label>
-	<!-- <label> -->
-	<!-- 	<!-- <input type="file" name="media" bind:value={media} /> --> -->
-	<!-- 	{#if media} -->
-	<!-- 		<img src={media.name} alt="Uploaded" /> -->
-	<!-- 	{/if} -->
-	<!-- </label> -->
 	<button type="submit" disabled={$loading}>Create</button>
-	{#if form?.error?.create?.content}
-		<span class="error-message">{form.error.content.join('. ')}</span>
+	{#if form?.content}
+		<span class="error-message">{form.error?.content?.join('. ')}</span>
 	{/if}
 </form>
 <hr />
-<Filter {topics} {topicId} {q} />
+<Filter topics={data.topics} topicId={data.topicId} q={data.q} />
 <hr />
 <div>
-	{#each learnings as { learningId, createdAt, updatedAt, deletedAt, topic, topicId, content }}
+	{#each data.learnings as { learningId, createdAt, updatedAt, deletedAt, topic, topicId, content }}
 		<div class={form?.requestEditLearning?.learningId === learningId ? 'visible' : 'hidden'}>
 			<p>
 				{new Date(createdAt).toLocaleDateString()}
@@ -77,7 +61,7 @@
 					<input value={learningId} type="hidden" name="learningId" />
 					<label>
 						<select name="topicId" value={topicId}>
-							{#each topics as { name, id }}
+							{#each data.topics as { name, id }}
 								<option value={id}>{name}</option>
 							{/each}
 						</select>

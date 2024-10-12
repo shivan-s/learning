@@ -12,7 +12,8 @@ export default class Learning extends BaseModel {
 			'learnings.updated_at as updatedAt',
 			'learnings.deleted_at as deletedAt',
 			'learnings.content as content',
-			'topics.name as topic'
+			'topics.name as topic',
+			'topics.id as topicId'
 		]);
 
 	getAll(params: {
@@ -24,7 +25,7 @@ export default class Learning extends BaseModel {
 	}) {
 		const { topicFilter, q, cursor, deleted } = params;
 		const limit = params.limit || 10;
-		const baseQuery = deleted
+		let query = deleted
 			? this.db
 					.selectFrom('learnings')
 					.innerJoin('topics', 'learnings.topic_id', 'topics.id')
@@ -34,16 +35,20 @@ export default class Learning extends BaseModel {
 						'learnings.updated_at as updatedAt',
 						'learnings.deleted_at as deletedAt',
 						'learnings.content as content',
-						'topics.name as topic'
+						'topics.name as topic',
+						'topics.id as topicId'
 					])
 			: this.#connect;
-		return baseQuery
-			.$if(q !== null && q.length > 0, (qb) =>
-				qb.where(({ or, cmpr }) => or([cmpr('content', 'like', q), cmpr('topics.name', 'like', q)]))
-			)
-			.$if(topicFilter !== null && topicFilter !== '-1', (qb) =>
-				qb.where('topics.id', '=', parseInt(topicFilter ?? ''))
-			)
+		if (q !== null && q.trim().length > 0) {
+			query = query.where(({ or, cmpr }) =>
+				or([cmpr('content', 'like', q), cmpr('topics.name', 'like', q)])
+			);
+		}
+		if (topicFilter !== null && topicFilter !== '-1') {
+			query = query.where('topics.id', '=', topicFilter);
+		}
+
+		return query
 			.orderBy('createdAt', 'desc')
 			.offset(cursor || 0 * limit)
 			.limit(limit)
@@ -69,65 +74,47 @@ export default class Learning extends BaseModel {
 			.executeTakeFirstOrThrow() as Promise<{ count: number }>;
 		return count;
 	}
-	create(params: { topicId: number; content: string }) {
+	create(params: { topicId: string; content: string }) {
 		const { topicId, content } = params;
 		return this.db
 			.insertInto('learnings')
-			.values(({ selectFrom }) => ({
-				topic_id: selectFrom('topics').where('id', '=', topicId).select(['id']).limit(1),
-				content: content
-			}))
-			.returning((eb) => [
+			.values({ topic_id: topicId, content })
+			.returning([
 				'learnings.id as learningId',
 				'learnings.created_at as createdAt',
-				'learnings.content as content',
-				eb
-					.selectFrom(['topics', 'learnings'])
-					.whereRef('learnings.topic_id', '=', 'topics.id')
-					.select('topics.name as topic')
-					.limit(1)
+				'learnings.content as content'
 			])
 			.executeTakeFirstOrThrow();
 	}
-	update(params: { learningId: number; topicId: number; content: string }) {
+	update(params: { learningId: number; topicId: string; content: string }) {
 		const { topicId, learningId, content } = params;
-		const now = new Date().toISOString();
+		const now = new Date().toUTCString();
 		return this.db
 			.updateTable('learnings')
-			.set(({ selectFrom }) => ({
+			.set({
 				updated_at: now,
-				topic_id: selectFrom('topics').where('id', '=', topicId).select(['id']).limit(1),
+				topic_id: topicId,
 				content
-			}))
+			})
 			.where('learnings.id', '=', learningId)
-			.returning((eb) => [
+			.returning([
 				'learnings.id as learningId',
 				'learnings.created_at as createdAt',
-				'learnings.content as content',
-				eb
-					.selectFrom(['topics', 'learnings'])
-					.whereRef('learnings.topic_id', '=', 'topics.id')
-					.select('topics.name as topic')
-					.limit(1)
+				'learnings.content as content'
 			])
 			.executeTakeFirstOrThrow();
 	}
 	delete(params: { learningId: number }) {
 		const { learningId } = params;
-		const now = new Date().toISOString();
+		const now = new Date().toUTCString();
 		return this.db
 			.updateTable('learnings')
 			.set({ deleted_at: now })
 			.where('learnings.id', '=', learningId)
-			.returning((eb) => [
+			.returning([
 				'learnings.id as learningId',
 				'learnings.created_at as createdAt',
-				'learnings.content as content',
-				eb
-					.selectFrom(['topics', 'learnings'])
-					.whereRef('learnings.topic_id', '=', 'topics.id')
-					.select('topics.name as topic')
-					.limit(1)
+				'learnings.content as content'
 			])
 			.executeTakeFirstOrThrow();
 	}
@@ -137,16 +124,7 @@ export default class Learning extends BaseModel {
 			.updateTable('learnings')
 			.set({ deleted_at: null })
 			.where('learnings.id', '=', learningId)
-			.returning((eb) => [
-				'id as learningId',
-				'created_at as createdAt',
-				'content as content',
-				eb
-					.selectFrom(['topics', 'learnings'])
-					.whereRef('learnings.topic_id', '=', 'topics.id')
-					.select('name as topic')
-					.limit(1)
-			])
+			.returning(['id as learningId', 'created_at as createdAt', 'content as content'])
 			.executeTakeFirstOrThrow();
 	}
 }

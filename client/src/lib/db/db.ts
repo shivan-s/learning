@@ -1,23 +1,19 @@
-import { Kysely, type Generated, SqliteDialect } from 'kysely';
+import { ColumnType, Kysely, type Generated } from 'kysely';
 import { D1Dialect } from 'kysely-d1';
 import type { D1Database } from '@cloudflare/workers-types';
-/* import dummyDb from './dummy'; */
 
 interface Topic {
-	id: Generated<number>;
-	created_at: Generated<Date>;
-	updated_at: Generated<Date> | Date;
-	deleted_at: Date | null;
+	id: Generated<string>;
 	name: string;
 }
 
 interface Learning {
 	id: Generated<number>;
-	created_at: Generated<Date>;
-	updated_at: Generated<Date> | Date;
-	deleted_at: Date | null;
+	created_at: ColumnType<string, string | undefined, string>;
+	updated_at: ColumnType<string, string | undefined, string | undefined>;
+	deleted_at: string | null;
 	content: string;
-	topic_id: number;
+	topic_id: string;
 }
 
 export interface Database {
@@ -26,11 +22,6 @@ export interface Database {
 }
 
 export default function connection(db: D1Database) {
-	/* console.log(SqliteDialect); */
 	const dialect = new D1Dialect({ database: db });
-	/* const dialect = db ? new D1Dialect({ database: db }) : new SqliteDialect({ database: dummyDb() }); */
-	if (!db) {
-		console.warn('Connecting to Dummy database');
-	}
 	return new Kysely<Database>({ dialect });
 }

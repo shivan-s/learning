@@ -1,11 +1,9 @@
 <script lang="ts">
 	import fromNow from '$lib/utils/fromNow';
 
-	export let createdAt: Date;
-	/* export let updatedAt: Date; */
+	export let createdAt: string;
 	export let topic: string;
 	export let content: string;
-	/* export let createMode: boolean = false; */
 </script>
 
 <div>

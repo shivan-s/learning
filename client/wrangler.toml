@@ -1,5 +1,9 @@
+name = "learning"
+compatibility_date = "2024-09-25"
+
 [[d1_databases]]
 binding = "DB"
 database_name = "learning"
-database_id = "fc57b26a-3ecb-4d3b-8657-116951f1a4b0"
-preview_database_id = "2a3c2e72-d900-43b2-9eeb-901058083ea3"
+database_id = "01875394-2845-4067-82c1-ffc7db650d38"
+preview_database_id = "local-db"
+# preview_database_id = "fa1e6524-cd6f-45db-b234-434b7e5a7a71"

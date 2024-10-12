@@ -1,5 +1,5 @@
 export default function fromNow(date: Date) {
-	const now = Date.now();
+	const now = new Date().getTime();
 	const then = date.getTime();
 
 	const interval = Math.floor((now - then) / 1000); // in seconds

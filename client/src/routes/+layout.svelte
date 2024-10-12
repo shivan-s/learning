@@ -57,7 +57,7 @@
 		align-items: center;
 		line-height: 1.5;
 		background: var(--primary-color);
-		font-family: 'Ubuntu Mono', monospace;
+		font-family: Monaspace Krypton, sans-serif;
 		color: var(--text-color);
 		-webkit-font-smoothing: antialiased;
 	}
@@ -223,5 +223,12 @@
 		100% {
 			opacity: 1;
 		}
+	}
+
+	@font-face {
+		font-family: 'Monaspace Krypton';
+		src: url('font/MonaspaceKrypton-Regular.woff') format('woff');
+		font-weight: normal;
+		font-style: normal;
 	}
 </style>
