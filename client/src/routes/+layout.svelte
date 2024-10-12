@@ -22,9 +22,9 @@
 <style>
 	:global(:root) {
 		--primary-color: whitesmoke;
-		--secondary-color: dimgrey;
+		--secondary-color: gainsboro;
 		--text-color: black;
-		--text-accent-color: darkgray;
+		--text-accent-color: dimgrey;
 		--danger-text: firebrick;
 		--danger-color: lightpink;
 		--success-text: darkgreen;
@@ -97,7 +97,7 @@
 	}
 	:global(li::before) {
 		content: '✽ ';
-		color: var(--secondary-color);
+		color: var(--text-accent-color);
 	}
 	:global(h1 a) {
 		text-decoration: none;
@@ -227,8 +227,15 @@
 
 	@font-face {
 		font-family: 'Monaspace Krypton';
-		src: url('font/MonaspaceKrypton-Regular.woff') format('woff');
+		src: url('/fonts/MonaspaceKrypton-Regular.woff') format('woff');
 		font-weight: normal;
+		font-style: normal;
+	}
+
+	@font-face {
+		font-family: 'Monaspace Krypton';
+		src: url('/fonts/MonaspaceKrypton-Bold.woff') format('woff');
+		font-weight: bold;
 		font-style: normal;
 	}
 </style>

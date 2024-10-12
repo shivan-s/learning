@@ -3,6 +3,7 @@
 	import type { ActionData, PageData } from './$types';
 	import { loading } from '$lib/stores';
 	import Filter from '$components/Filter.svelte';
+	import { page } from '$app/stores';
 
 	export let data: PageData;
 	export let form: ActionData;
@@ -29,10 +30,14 @@
 		</select>
 	</label>
 	<label>
-		<textarea class={form?.content && 'error'} name="content" bind:value={content} />
+		<textarea
+			class={$page.status === 400 && form?.content ? 'error' : ''}
+			name="content"
+			bind:value={content}
+		/>
 	</label>
 	<button type="submit" disabled={$loading}>Create</button>
-	{#if form?.content}
+	{#if $page.status === 400 && form?.content}
 		<span class="error-message">{form.error?.content?.join('. ')}</span>
 	{/if}
 </form>
@@ -87,7 +92,7 @@
 			<p>{new Date(createdAt).toLocaleDateString()}</p>
 			<strong>{topic}</strong>
 			<div>
-				<p>{content}</p>
+				<p style="word-break: break-word; white-space: break-spaces">{content}</p>
 				{#if deletedAt}
 					<form
 						method="POST"

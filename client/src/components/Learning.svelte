@@ -6,7 +6,7 @@
 	export let content: string;
 </script>
 
-<div>
+<div style="background-color: var(--secondary-color); border-radius: 0.25rem; padding: 1rem;">
 	<p><strong>{topic}</strong></p>
 	<p
 		title={`${new Date(createdAt).toLocaleTimeString('en-NZ')}, ${new Date(
@@ -19,6 +19,6 @@
 	>
 		<i>{fromNow(new Date(createdAt))}</i>
 	</p>
-	<p>{content}</p>
+	<p style="word-break: break-word; white-space: break-spaces">{content}</p>
 </div>
 <hr />

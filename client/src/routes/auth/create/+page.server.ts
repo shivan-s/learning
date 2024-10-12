@@ -104,10 +104,9 @@ export const actions: Actions = {
 			});
 		}
 		const { learning } = locals.models;
-		const undeletedLearning = learning.undelete({ learningId: result.data.learningId });
+		learning.undelete({ learningId: result.data.learningId });
 		return {
 			success: true,
-			undeletedLearning,
 			learningId
 		};
 	},
